@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Legal Flora</title>
+    <link rel="icon" type="image/png" href="favicon.png?v=2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+    <!-- ---------- Login gate ---------- -->
+    <div id="gate">
+        <div class="gate-card">
+            <div class="gate-logo">
+                <img src="logo.webp?v=2" alt="Legal Flora">
+                <h1>Admin Dashboard</h1>
+                <p>Legal Flora Business Solution LLP</p>
+            </div>
+            <div class="gate-error" id="gateError"></div>
+            <input type="email" id="user" placeholder="Admin email" autocomplete="username">
+            <input type="password" id="pass" placeholder="Password" autocomplete="current-password">
+            <button id="loginBtn">Login</button>
+            <div class="gate-hint">
+                Sign in with the admin email and password created in Supabase Authentication.
+            </div>
+        </div>
+    </div>
+
+    <!-- ---------- Dashboard ---------- -->
+    <div id="dash">
+        <div class="topbar">
+            <div class="topbar-left">
+                <img src="logo.webp?v=2" alt="Legal Flora">
+                <div>
+                    <h2>User Data &amp; Activity</h2>
+                    <div class="sub">Legal Flora admin &copy; 2026</div>
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-ghost" id="pwBtn"><i class="fas fa-key"></i> Password</button>
+                <button class="btn btn-ghost" id="chatCfgBtn"><i class="fas fa-robot"></i> Chat backend</button>
+                <button class="btn btn-ghost" id="refreshBtn"><i class="fas fa-rotate"></i> Refresh</button>
+                <button class="btn btn-green" id="exportBtn"><i class="fas fa-download"></i> Export CSV</button>
+                <button class="btn btn-danger" id="clearBtn"><i class="fas fa-trash-can"></i> Clear</button>
+                <button class="btn btn-ghost" id="logoutBtn"><i class="fas fa-right-from-bracket"></i> Logout</button>
+            </div>
+        </div>
+
+        <div class="wrap">
+            <div class="kpi-grid" id="kpis"></div>
+
+            <div class="duo">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h3><i class="fas fa-user-plus i-green"></i> Leads</h3>
+                        <span class="sub" id="leadsCount"></span>
+                    </div>
+                    <div class="scroll">
+                        <table>
+                            <thead><tr><th>When</th><th>Contact</th><th>Source</th></tr></thead>
+                            <tbody id="leadsBody"></tbody>
+                        </table>
+                        <div class="empty" id="leadsEmpty" style="display:none">No leads captured yet.</div>
+                    </div>
+                    <div class="page-controls"><button id="leadsPrev" type="button">Previous</button><span id="leadsPage"></span><button id="leadsNext" type="button">Next</button></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <h3><i class="fas fa-wave-square i-violet"></i> Live Activity</h3>
+                        <span class="sub">newest first</span>
+                    </div>
+                    <div class="scroll" id="eventsBody"></div>
+                    <div class="page-controls"><button id="eventsPrev" type="button">Previous</button><span id="eventsPage"></span><button id="eventsNext" type="button">Next</button></div>
+                </div>
+            </div>
+            <div class="duo" style="margin-top:1.6rem">
+                <div class="panel">
+                    <div class="panel-head"><h3>Recent admin sign-ins</h3><span class="sub">latest 10 attempts</span></div>
+                    <div class="scroll" id="loginsBody"></div>
+                </div>
+                <div class="panel">
+                    <div class="panel-head"><h3>Cookie choices</h3><span class="sub">latest 10 choices</span></div>
+                    <div class="scroll" id="consentsBody"></div>
+                </div>
+            </div>
+        </div>
+    </div>        <!-- ---------- Chat backend modal ---------- -->
+        <div class="modal-backdrop" id="chatCfgModal">
+            <div class="modal">
+                <h3>Chat bot backend</h3>
+                <div class="gate-error" id="chatCfgError"></div>
+                <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem; line-height:1.5;">
+                    When a backend is configured, the on-screen chat bot will answer from that model instead of the built-in FAQ.
+                    The API key is stored server-side and never shown back to you. For now the chat bot still works with the FAQ when no backend is set.
+                </p>
+                <input type="text" id="chatProvider" placeholder="Provider (openai or gemini)" autocomplete="off">
+                <input type="text" id="chatBaseUrl" placeholder="Custom API URLs are disabled for security" disabled>
+                <input type="text" id="chatModel" placeholder="Model (e.g. gpt-4o-mini or gemini-2.0-flash)" autocomplete="off">
+                <input type="password" id="chatApiKey" placeholder="API key" autocomplete="off">
+                <textarea id="chatSystemPrompt" rows="3" placeholder="System prompt (optional)" style="width:100%; padding:0.8rem 1rem; border:1px solid var(--line); border-radius:0.8rem; margin-bottom:0.8rem; font-size:0.92rem; font-family:inherit; outline:none; resize:vertical;"></textarea>
+                <div class="row">
+                    <button class="btn btn-ghost" id="chatCfgCancel">Cancel</button>
+                    <button class="btn btn-green" id="chatCfgSave">Save</button>
+                    <button class="btn btn-ghost" id="chatCfgReset">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ---------- Change password modal ---------- -->
+        <div class="modal-backdrop" id="pwModal">
+        <div class="modal">
+            <h3>Change admin password</h3>
+            <div class="gate-error" id="pwError"></div>
+            <input type="password" id="pwCurrent" placeholder="Current password">
+            <input type="password" id="pwNew" placeholder="New password (min 12 chars)">
+            <input type="password" id="pwNew2" placeholder="Repeat new password">
+            <div class="row">
+                <button class="btn btn-ghost" id="pwCancel">Cancel</button>
+                <button class="btn btn-green" id="pwSave">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="admin.js" defer></script>
+</body>
+
+</html>
+
